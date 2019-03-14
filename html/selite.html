@@ -1,0 +1,32 @@
+<p>
+  <h4>Ehdotetut ehdokkaat</h4> Kone vertaa annettuja vastauksia
+  ehdokkaiden vastauksiin ja palauttaa ne viisi ehdokasta, joiden
+  vastauksissa oli eniten täysin samoja vastauksia. Kunkin ehdokkaan
+  kohdalla kone kertoo myös samojen vastauksien osuuden kaikista
+  kysymyksistä. Kysymykseen vastaaminen tai En osaa sanoa -vaihtoehdon
+  valitseminen huomioidaan kaikki ehdokasta etsiessä, mutta
+  kysymyksien painot eivät vaikuta ehdokkaan valintaan.
+  <h4>Päätelty ihannepuolue</h4> Eroten muista vaalikoneista, tämä
+  vaalikone päättelee annettujen vastausten perusteella myös
+  yhdistelmän puolueita, joka sopii parhaiten vastauksiin. Tuloksena
+  on siis yhden puolueen sijaan %-osuudet kunkin vaalipiirin puolueen
+  kohdalla, jotka yhdessä kertovat millainen puolueiden sekoitus olisi
+  vastaajalle ihanteellinen. Ihannepuoluetta laskiessa painoja
+  hyödynnetään siten, että painolla 0 kysymys jätetään kokonaan
+  huomiotta, painolla 1 se huomioidaan yhden kysymyksen arvoisena,
+  painolla 50 viisikymmenkertaisena jne. Kone tuottaa myös
+  pääkomponenttianalyysillä luodun ehdokaskartan, jossa näkyy
+  vastaajan sijoitus vaalipiirin ehdokkaisiin nähden.
+  <br><br> Vaalikone käyttää puolueyhdistelmän laskemiseen
+  sekaviljeltyjen bakteerien tunnistukseen kehitettyä tilastollista
+  mallia, joka on suoraviivaisesti sovellettavissa
+  vaalikonekysymyksiin kuvittelemalla puolueet kokoelmana ehdokkaita,
+  joita yhdistävät jaetut arvot. Vertaamalla äänestäjän vastauksia
+  ehdokkaisiin voidaan äänestäjä esittää yhdistelmänä yhtä tai
+  useampaa puolueiden edustamaa arkkityyppiä. Mallin tarkemmat tiedot
+  löytyvät
+  esijulkaisusta <a href="https://doi.org/10.1101/332544">https://doi.org/10.1101/332544</a>
+  ja mallin sovitus tapahtuu
+  hyödyntäen <a href="http://bitseq.github.io/publications/publications">BitSeq-ohjelman</a>
+  käyttämää variational Bayes -algoritmia.
+</p>
