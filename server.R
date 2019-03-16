@@ -1,3 +1,4 @@
+library("rjson")
 source("read_and_write.R")
 source("manipulate_data.R")
 options(digits = 2)
@@ -8,9 +9,8 @@ function(input, output) {
         n.datasets <- length(input$datasets)
         datasets <- vector(mode = "list", n.datasets)
         for (i in 1:n.datasets) {
-            dataset <- read.csv(input$datasets[[i]], sep=',', header=TRUE,
-                                stringsAsFactors=FALSE, encoding="UTF-8")
-            datasets[[i]] <- FormatData(dataset, input$vaalipiiri)
+            dataset <- fromJSON(file = input$datasets[[i]])
+            datasets[[i]] <- FormatJSONData(dataset, input$vaalipiiri)
         }
         return(datasets[[1]]) ## TODO: support multiple questionnaires
     })

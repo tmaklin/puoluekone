@@ -1,24 +1,21 @@
-FormatData <- function(data, district) {
-    selected.district<- data[data$districts == district, ]
-    answers <- selected.district[, grepl("answers", names(data))]
-
-    parties <- as.character(selected.district$parties)
-    first.names <- selected.district$firstNames
-    last.names <- selected.district$lastNames
-
+FormatJSONData <- function(data, district) {
+    selected.district <- data$candidates[unlist(lapply(data$candidates, "[", "district")) == district]
+    n.candidates <- length(selected.district)
+    n.questions <- length(selected.district[[1]]$answers)
+    answers <- lapply(selected.district, "[", "answers")
+    answers <- matrix(unlist(answers), n.candidates, n.questions, byrow=TRUE)
+    first.names <- unlist(lapply(selected.district, "[", "firstName"))
+    last.names <- unlist(lapply(selected.district, "[", "lastName"))
+    parties <- unname(unlist(lapply(selected.district, "[", "party")))
     n.parties <- length(unique(parties))
-    nqs <- ncol(answers)
-    n.candidates <- nrow(answers)
 
-    candidates <- paste(selected.district$firstNames, ' ',
-                        selected.district$lastNames, ", ",
-                        selected.district$parties, sep='')
+    candidates <- paste(first.names, ' ', last.names, ", ", parties, sep='')
 
     return(list("data" = answers,
                 "parties" = parties,
                 "candidates" = candidates,
                 "nparties" = n.parties,
-                "nqs" = nqs,
+                "nqs" = n.questions,
                 "ncandidates" = n.candidates))
 }
 
