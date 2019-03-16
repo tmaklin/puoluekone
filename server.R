@@ -32,10 +32,22 @@ function(input, output) {
         return(questions)
     })
 
+    filled.values <- reactive({
+        req(input$q1) ## check if the questionnaire exists
+        n.questions <- sum(grepl("q", names(input)))
+        self.answers <- character(n.questions)
+        self.weights <- numeric(n.questions)
+        for (i in 1:n.questions) {
+            self.answers[i] <- input[[paste("q", i, sep='')]]
+            self.weights[i] <- as.numeric(input[[paste("w", i, sep='')]])
+        }
+        return(list("answers" = as.numeric(self.answers), "weights" = self.weights))
+    })
+
     candidateSuggestions <- reactive({
         data <- constituency()$data
         n.suggestions <- 5
-        self.answers <- ExtractAnswers(input, data$nqs)
+        self.answers <- filled.values()$answers
         suggested <- FindCandidates(data$data, self.answers, data$ncandidates, n.suggestions)
         candidates <- as.list(paste(data$candidates[suggested$id], " (",
                                     round(suggested$agree/data$nqs*100, 0),
@@ -48,8 +60,7 @@ function(input, output) {
 
     partySuggestions <- reactive({
         data <- constituency()$data
-        self.answers <- ExtractAnswers(input, data$nqs)
-        out.folder <- WriteResults(data, data$parties, self.answers, input)
+        out.folder <- WriteResults(data, data$parties, filled.values(), input)
         system(paste("./mSWEEP -f ", out.folder, " -i ", gsub(' ', "_", input$vaalipiiri), ".txt", " -o ", out.folder, "/test", sep=''))
         results <- read.table(paste(out.folder, "test_abundances.txt", sep='/'), sep='\t')
         results <- results[order(results[, 2], decreasing=TRUE), ]
@@ -80,7 +91,7 @@ function(input, output) {
                           "green4") # Vihreät
         data <- constituency()$data
         parties <- sort(unique(data$parties))
-        self <- ExtractAnswers(input, data$nqs)
+        self <- filled.values()$answers
         pca <- prcomp(data$data)
 
         newcoords <- scale(t(as.matrix(self)), pca$center, pca$scale) %*% pca$rotation
@@ -107,4 +118,5 @@ function(input, output) {
         vals <- vals[order(vals[, 2], decreasing=TRUE), ]
         HTML(paste(paste(round(vals[, 2]*100, 2), "% ", vals[, 1], sep=''), collapse='<br/>'))
     })
+
 }

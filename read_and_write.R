@@ -4,7 +4,7 @@ WriteResults <- function(data, parties, self, input) {
     answer.aligns <- matrix(0, data$nqs, data$ncandidates)
     cluster.hits <- matrix(0, data$nqs, data$nparties)
     for (i in 1:data$nqs) {
-        answer.aligns[i, ] <- FindNear(data$data[, i], self[i])
+        answer.aligns[i, ] <- FindNear(data$data[, i], self$answers[i])
         party.aligns <- unname(unlist(lapply(by(answer.aligns[i,], parties, table), "[", "1")))
         party.aligns[is.na(party.aligns)] <- 0
         cluster.hits[i, ] <- party.aligns
@@ -24,7 +24,7 @@ WriteResults <- function(data, parties, self, input) {
     }
     sink()
 
-    weights.question <- ExtractWeights(input, data$nqs)
+    weights.question <- self$weights
     sink(paste(out.folder, "pseudoalignments.tsv", sep='/'))
     for (i in 0:(id.question - 1)) {
         cat(i)

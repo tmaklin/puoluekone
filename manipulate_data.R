@@ -28,22 +28,6 @@ ExtractJSONQuestions <- function(questions, district) {
     return(list("ids" = question.ids, "text" = question.texts))
 }
 
-ExtractAnswers <- function(data, n.questions) {
-    self.answers <- character(n.questions)
-    for (i in 1:n.questions) {
-        self.answers[i] <- data[[paste("q", i, sep='')]]
-    }
-    return(as.numeric(self.answers))
-}
-
-ExtractWeights <- function(data, n.questions) {
-    vec <- numeric(n.questions)
-    for (i in 1:n.questions) {
-        vec[i] <- as.numeric(data[[paste("w", i, sep='')]])
-    }
-    return(vec)
-}
-
 FindNear <- function(self, candidate) {
     agree <- (self %in% c(4, 5)) & (candidate %in% c(4, 5))
     disagree <- ((self %in% c(1, 2)) & (candidate %in% c(1, 2)))
