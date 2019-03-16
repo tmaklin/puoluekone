@@ -59,7 +59,7 @@ function(input, output) {
         return(list("answers" = as.numeric(self.answers), "weights" = self.weights))
     })
 
-    candidateSuggestions <- reactive({
+    candidateSuggestions <- eventReactive(input$estimate, {
         data <- constituency()$data
         n.suggestions <- 5
         self.answers <- filled.values()$answers
@@ -73,7 +73,7 @@ function(input, output) {
         list("candidates" = candidates, "nearCandidates" = nearCandidates)
     })
 
-    partySuggestions <- reactive({
+    partySuggestions <- eventReactive(input$estimate, {
         data <- constituency()$data
         out.folder <- WriteResults(data, data$parties, filled.values(), input)
         write.table(data$parties, file="indis.txt", sep='\n', quote=FALSE,
@@ -87,7 +87,7 @@ function(input, output) {
         results
     })
 
-    output$plot1 <- renderPlot({
+    plot1 <- eventReactive(input$estimate, {
         party.colors <- c("plum2", # Eläinoikeuspuolue
                           "hotpink", # Feministinen puolue
                           "slategray4", # Itsenäisyyspuolue

@@ -6,6 +6,7 @@ fluidPage(
         uiOutput("datasets"),
         selectInput("vaalipiiri", "Vaalipiiri", selected = "Helsinki", choices = c("Helsinki")),
         uiOutput("questions"),
+        actionButton("estimate", "Hae ehdokaat ja puolueet"),
         h3("Sopivimmat ehdokkaat"),
         htmlOutput("candidates"),
         h3("Sopivimmat ehdokkaat"),
