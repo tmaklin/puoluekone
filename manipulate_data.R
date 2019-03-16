@@ -29,6 +29,29 @@ ExtractJSONQuestions <- function(questions, district) {
     return(list("ids" = question.ids, "text" = question.texts))
 }
 
+MergeDatasets <- function(datasets, questions, n.datasets) {
+    question.texts <- unlist(lapply(questions, "[", "text"))
+
+    candidates <- Reduce(intersect, lapply(datasets, function(x) unlist(x$candidates)))
+    all.candidates <- unlist(lapply(datasets, "[", "candidates"))
+    parties <- unlist(lapply(datasets, "[", "parties"))
+    parties <- parties[match(candidates, all.candidates)]
+    n.candidates <- length(candidates)
+    n.questions <- sum(unlist(lapply(datasets, function(x) ncol(x$data))))
+    n.parties <- length(unique(parties))
+    answers <- matrix(3, n.candidates, n.questions) ## 3 is empty/no answer
+    start <- 1
+    for (i in 1:n.datasets) {
+        order.in.data <- match(candidates, datasets[[i]]$candidates)
+        answers[, start:(start - 1 + datasets[[i]]$nqs)] <- datasets[[i]]$data[order.in.data, ]
+        start <- start + datasets[[i]]$nqs
+    }
+    return(list("data" = list("data" = answers, "parties" = parties,
+                              "candidates" = candidates, "nparties" = n.parties,
+                              "nqs" = n.questions, "ncandidates" = n.candidates),
+                "questions" = question.texts))
+}
+
 FindNear <- function(self, candidate) {
     agree <- (self %in% c(4, 5)) & (candidate %in% c(4, 5))
     disagree <- ((self %in% c(1, 2)) & (candidate %in% c(1, 2)))
