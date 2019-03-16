@@ -5,13 +5,14 @@ FormatJSONData <- function(data, question.ids, district) {
     answers <- lapply(selected.district, "[", "answers")
     answers <- matrix(unlist(answers), n.candidates, n.questions, byrow=TRUE)
     answers <- answers[, question.ids]
+    n.questions <- length(question.ids)
     first.names <- unlist(lapply(selected.district, "[", "firstName"))
     last.names <- unlist(lapply(selected.district, "[", "lastName"))
-    parties <- unname(unlist(lapply(selected.district, "[", "party")))
+    ## .r.p. is in all party names
+    parties <- gsub(" r.p.", "", unname(unlist(lapply(selected.district, "[", "party"))))
     n.parties <- length(unique(parties))
 
     candidates <- paste(first.names, ' ', last.names, ", ", parties, sep='')
-
     return(list("data" = answers,
                 "parties" = parties,
                 "candidates" = candidates,

@@ -6,6 +6,7 @@ options(digits = 2)
 function(input, output) {
 
     constituency <- reactive({
+        req(input$datasets)
         n.datasets <- length(input$datasets)
         datasets <- vector(mode = "list", n.datasets)
         questions <- vector(mode = "list", n.datasets)
@@ -14,8 +15,35 @@ function(input, output) {
             questions[[i]] <- ExtractJSONQuestions(dataset$questions, input$vaalipiiri)
             datasets[[i]] <- FormatJSONData(dataset$candidates, questions[[i]]$ids, input$vaalipiiri)
         }
-        ## TODO: support multiple questionnaires
+        if (n.datasets > 1) {
+            question.texts <- unlist(lapply(questions, "[", "text"))
+
+            candidates <- Reduce(intersect, lapply(datasets, function(x) unlist(x$candidates)))
+            all.candidates <- unlist(lapply(datasets, "[", "candidates"))
+            parties <- unlist(lapply(datasets, "[", "parties"))
+            parties <- parties[match(candidates, all.candidates)]
+            n.candidates <- length(candidates)
+            n.questions <- sum(unlist(lapply(datasets, function(x) ncol(x$data))))
+            n.parties <- length(unique(parties))
+            answers <- matrix(3, n.candidates, n.questions) ## 3 is empty/no answer
+            start <- 1
+            for (i in 1:n.datasets) {
+                order.in.data <- match(candidates, datasets[[i]]$candidates)
+                answers[, start:(start - 1 + datasets[[i]]$nqs)] <- datasets[[i]]$data[order.in.data, ]
+                start <- start + datasets[[i]]$nqs
+            }
+            return(list("data" = list("data" = answers, "parties" = parties, "candidates" = candidates, "nparties" = n.parties, "nqs" = n.questions, "ncandidates" = n.candidates),
+                        "questions" = question.texts))
+        }
         return(list("data" = datasets[[1]], "questions" = questions[[1]]$text))
+    })
+
+    output$datasets <- renderUI({
+        files <- list.files("data/")
+        dataset.names <- toupper(gsub("_[a-z0-9.]*", "", files))
+        files <- paste("data", files, sep='/')
+        names(files) <- dataset.names
+        checkboxGroupInput("datasets", "Kysymykset", choices = files)
     })
 
     output$questions <- renderUI({
@@ -61,7 +89,9 @@ function(input, output) {
     partySuggestions <- reactive({
         data <- constituency()$data
         out.folder <- WriteResults(data, data$parties, filled.values(), input)
-        system(paste("./mSWEEP -f ", out.folder, " -i ", gsub(' ', "_", input$vaalipiiri), ".txt", " -o ", out.folder, "/test", sep=''))
+        write.table(data$parties, file="indis.txt", sep='\n', quote=FALSE, row.names=FALSE, col.names=FALSE)
+        ##system(paste("./mSWEEP -f ", out.folder, " -i ", gsub(' ', "_", input$vaalipiiri), "_yle.txt", " -o ", out.folder, "/test", sep=''))
+        system(paste("./mSWEEP -f ", out.folder, " -i indis.txt", " -o ", out.folder, "/test", sep=''))
         results <- read.table(paste(out.folder, "test_abundances.txt", sep='/'), sep='\t')
         results <- results[order(results[, 2], decreasing=TRUE), ]
         system(paste("rm -rf", out.folder, sep=' '))
