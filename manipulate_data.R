@@ -1,9 +1,10 @@
-FormatJSONData <- function(data, district) {
-    selected.district <- data$candidates[unlist(lapply(data$candidates, "[", "district")) == district]
+FormatJSONData <- function(data, question.ids, district) {
+    selected.district <- data[unlist(lapply(data, "[", "district")) == district]
     n.candidates <- length(selected.district)
     n.questions <- length(selected.district[[1]]$answers)
     answers <- lapply(selected.district, "[", "answers")
     answers <- matrix(unlist(answers), n.candidates, n.questions, byrow=TRUE)
+    answers <- answers[, question.ids]
     first.names <- unlist(lapply(selected.district, "[", "firstName"))
     last.names <- unlist(lapply(selected.district, "[", "lastName"))
     parties <- unname(unlist(lapply(selected.district, "[", "party")))
@@ -17,6 +18,14 @@ FormatJSONData <- function(data, district) {
                 "nparties" = n.parties,
                 "nqs" = n.questions,
                 "ncandidates" = n.candidates))
+}
+
+ExtractJSONQuestions <- function(questions, district) {
+    districts <- unlist(lapply(questions, function(x) is.null(x$district)))
+    districts[!districts] <- unlist(lapply(questions, function(x) x$district == district))
+    question.ids <- unlist(lapply(questions, "[", "id"))[districts]
+    question.texts <- unname(unlist(lapply(questions, "[", "text"))[districts])
+    return(list("ids" = question.ids, "text" = question.texts))
 }
 
 ExtractAnswers <- function(data, n.questions) {

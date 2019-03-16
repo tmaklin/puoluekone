@@ -5,18 +5,21 @@ options(digits = 2)
 
 function(input, output) {
 
-    answers <- reactive({
+    constituency <- reactive({
         n.datasets <- length(input$datasets)
         datasets <- vector(mode = "list", n.datasets)
+        questions <- vector(mode = "list", n.datasets)
         for (i in 1:n.datasets) {
             dataset <- fromJSON(file = input$datasets[[i]])
-            datasets[[i]] <- FormatJSONData(dataset, input$vaalipiiri)
+            questions[[i]] <- ExtractJSONQuestions(dataset$questions, input$vaalipiiri)
+            datasets[[i]] <- FormatJSONData(dataset$candidates, questions[[i]]$ids, input$vaalipiiri)
         }
-        return(datasets[[1]]) ## TODO: support multiple questionnaires
+        ## TODO: support multiple questionnaires
+        return(list("data" = datasets[[1]], "questions" = questions[[1]]$text))
     })
 
     output$questions <- renderUI({
-        question.text <- read.table("kysymykset.txt", stringsAsFactors=FALSE, header=FALSE, sep='\n')[, 1]
+        question.text <- constituency()$questions
         choices = list("Täysin samaa mieltä" = 5, "Jokseenkin samaa mieltä" = 4, "Jokseenkin eri mieltä" = 2, "Täysin eri mieltä" = 1, "En osaa sanoa" = 3)
         n.questions <- length(question.text)
         questions <- vector(mode = "list", length=2*n.questions)
@@ -30,7 +33,7 @@ function(input, output) {
     })
 
     candidateSuggestions <- reactive({
-        data <- answers()
+        data <- constituency()$data
         n.suggestions <- 5
         self.answers <- ExtractAnswers(input, data$nqs)
         suggested <- FindCandidates(data$data, self.answers, data$ncandidates, n.suggestions)
@@ -44,7 +47,7 @@ function(input, output) {
     })
 
     partySuggestions <- reactive({
-        data <- answers()
+        data <- constituency()$data
         self.answers <- ExtractAnswers(input, data$nqs)
         out.folder <- WriteResults(data, data$parties, self.answers, input)
         system(paste("./mSWEEP -f ", out.folder, " -i ", gsub(' ', "_", input$vaalipiiri), ".txt", " -o ", out.folder, "/test", sep=''))
@@ -75,7 +78,7 @@ function(input, output) {
                           "yellow", # RKP
                           "red4", # Vasemmistoliitto
                           "green4") # Vihreät
-        data <- answers()
+        data <- constituency()$data
         parties <- sort(unique(data$parties))
         self <- ExtractAnswers(input, data$nqs)
         pca <- prcomp(data$data)
