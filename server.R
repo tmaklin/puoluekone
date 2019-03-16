@@ -15,6 +15,20 @@ function(input, output) {
         return(datasets[[1]]) ## TODO: support multiple questionnaires
     })
 
+    output$questions <- renderUI({
+        question.text <- read.table("kysymykset.txt", stringsAsFactors=FALSE, header=FALSE, sep='\n')[, 1]
+        choices = list("Täysin samaa mieltä" = 5, "Jokseenkin samaa mieltä" = 4, "Jokseenkin eri mieltä" = 2, "Täysin eri mieltä" = 1, "En osaa sanoa" = 3)
+        n.questions <- length(question.text)
+        questions <- vector(mode = "list", length=2*n.questions)
+        j <- 1
+        for (i in 1:n.questions) {
+            questions[[j]] <- radioButtons(paste("q", i, sep=''), label = question.text[i], choices = choices, selected = 3, width = '100%')
+            questions[[j + 1]] <- sliderInput(paste("w", i, sep=''), label = "Paino", value = 50, min = 0, max = 100, step = 1)
+            j <- j + 2
+        }
+        return(questions)
+    })
+
     candidateSuggestions <- reactive({
         data <- answers()
         n.suggestions <- 5
