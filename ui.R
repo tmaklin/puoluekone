@@ -4,7 +4,8 @@ fluidPage(
     includeHTML("html/lyhyesti.html"),
     mainPanel(
         uiOutput("datasets"),
-        selectInput("vaalipiiri", "Vaalipiiri", selected = "Helsinki", choices = c("Helsinki")),
+        ## This is horrible and should be dynamically generated!
+        selectInput("vaalipiiri", "Vaalipiiri", selected = "Helsinki", choices = c("Uusimaa", "Helsinki", "Varsinais-Suomi", "Satakunta", "Ahvenanmaa", "Häme", "Pirkanmaa", "Kaakkois-Suomi", "Savo-Karjala", "Vaasa", "Keski-Suomi", "Oulu", "Lappi")),
         uiOutput("questions"),
         actionButton("estimate", "Hae ehdokaat ja puolueet"),
         h3("Sopivimmat ehdokkaat"),
