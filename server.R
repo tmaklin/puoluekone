@@ -75,13 +75,14 @@ function(input, output) {
 
     partySuggestions <- eventReactive(input$estimate, {
         data <- constituency()$data
-        survey.results <- WriteResults(data, data$parties, filled.values(), input, write.to.disk = TRUE)
-        system(paste("./mSWEEP -f ", survey.results, " -i indis.txt",
-                     " -o ",survey.results, "/test", sep=''))
-        results <- read.table(paste(survey.results, "test_abundances.txt", sep='/'), sep='\t')
+        survey.results <- WriteResults(data, data$parties, filled.values(), input,
+                                       write.to.disk = FALSE)
+        results <- system("./mSWEEP -f what -i ever",
+                          input=survey.results, ignore.stderr = TRUE, intern = TRUE)
+        con <- textConnection(results)
+        results <- read.table(con, sep='\t')
+        close(con)
         results <- results[order(results[, 2], decreasing=TRUE), ]
-        system(paste("rm -rf", survey.results, sep=' '))
-
         results
     })
 

@@ -57,5 +57,6 @@ WriteResults <- function(data, parties, self, input, write.to.disk = TRUE) {
     if (write.to.disk) {
         return(WriteToDisk(parties, out.ecs, out.weights, out.info))
     }
-    return(paste(paste(parties, collapse='\n'), "\nRUN_INFO\n", out.info, out.weights, "PSEUDOALIGNMENT_ECS\n", out.ecs, sep=''))
+    return(paste(paste(parties, collapse='\n'), "\nRUN_INFO\n",out.info,
+                 out.weights,"PSEUDOALIGNMENT_ECS\n", out.ecs, sep=''))
 }
