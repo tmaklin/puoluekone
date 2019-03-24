@@ -15,7 +15,7 @@ void VerifyGrouping(std::string &run_info_file, unsigned n_refs) {
   //std::ifstream run_info(run_info_file);
   //if (run_info.is_open()) {
     std::string line;
-    while (getline(std::cin, line) && line != "PSEUDOALIGNMENT_COUNTS") {
+    while (getline(std::cin, line)) {
       if (line_nr == 0) {
   	++line_nr;
       } else {
