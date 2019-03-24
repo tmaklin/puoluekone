@@ -50,10 +50,12 @@ WriteResults <- function(data, parties, self, input, write.to.disk = TRUE) {
         out.weights <- paste(out.weights, i, '\t', weights.question[i + 1], '\n', sep='')
     }
 
-    out.info <- paste("{", '\n', "\"        n_targets\": ", data$ncandidates, "}", sep='')
+    out.info <- paste("{", '\n', "        \"n_targets\" : ", data$ncandidates, ",",
+                      #"\n        \"created_from_R\" : 1\n}",
+                      sep='')
 
     if (write.to.disk) {
         return(WriteToDisk(parties, out.ecs, out.weights, out.info))
     }
-    return(paste(paste(parties, collapse='\n'), "RUN_INFO", out.info, "PSEUDOALIGNMENT_COUNTS", out.weights, "PSEUDOALIGNMENT_ECS", out.ecs, sep='\n'))
+    return(paste(paste(parties, collapse='\n'), "\nRUN_INFO\n", out.info, out.weights, "PSEUDOALIGNMENT_ECS\n", out.ecs, sep=''))
 }
