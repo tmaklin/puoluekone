@@ -6,5 +6,6 @@ cd mSWEEP/build
 cmake ..
 make
 cd ../../
-mv mSWEEP/mSWEEP ./
+mv mSWEEP/mSWEEP ./mSWEEP-tmp
 rm -rf mSWEEP
+mv mSWEEP-tmp mSWEEP
