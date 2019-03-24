@@ -11,33 +11,33 @@
 void VerifyGrouping(std::string &run_info_file, unsigned n_refs) {
   // Get the number of reference sequences in the pseudoalignment
   // contained in the 'n_targets' variable in run_info.json file.
-  // short unsigned line_nr = 0; // number of reference seqs is on line 2 (kallisto v0.43)
-  // std::ifstream run_info(run_info_file);
-  // if (run_info.is_open()) {
-  //   std::string line;
-  //   while (getline(run_info, line)) {
-  //     if (line_nr == 0) {
-  // 	++line_nr;
-  //     } else {
-  // 	std::string part;
-  // 	std::stringstream partition(line);
-  // 	unsigned n_targets = 0;
-  // 	while (getline(partition, part, ':')) {
-  // 	  if (n_targets == 0) {
-  // 	    ++n_targets;
-  // 	  } else {
-  // 	    part.pop_back(); // the number ends in a ','; get rid of it.
-  // 	    unsigned n_targets = std::stoi(part);
-  // 	    if (n_targets > n_refs) {
-  // 	      throw std::runtime_error("pseudoalignment has more reference sequences than the grouping.");
-  // 	    } else if (n_targets < n_refs) {
-  // 	      throw std::runtime_error("grouping has more reference sequences than the pseudoalignment.");
-  // 	    }
-  // 	    return;
-  // 	  }
-  // 	}
-  //     }
-  //   }
+  short unsigned line_nr = 0; // number of reference seqs is on line 2 (kallisto v0.43)
+  //std::ifstream run_info(run_info_file);
+  //if (run_info.is_open()) {
+    std::string line;
+    while (getline(std::cin, line) && line != "PSEUDOALIGNMENT_COUNTS") {
+      if (line_nr == 0) {
+  	++line_nr;
+      } else {
+  	std::string part;
+  	std::stringstream partition(line);
+  	unsigned n_targets = 0;
+  	while (getline(partition, part, ':')) {
+  	  if (n_targets == 0) {
+  	    ++n_targets;
+  	  } else {
+  	    part.pop_back(); // the number ends in a ','; get rid of it.
+  	    unsigned n_targets = std::stoi(part);
+  	    if (n_targets > n_refs) {
+  	      throw std::runtime_error("pseudoalignment has more reference sequences than the grouping.");
+  	    } else if (n_targets < n_refs) {
+  	      throw std::runtime_error("grouping has more reference sequences than the pseudoalignment.");
+  	    }
+  	    return;
+  	  }
+  	}
+      }
+    }
   // } else {
   //   throw std::runtime_error(run_info_file + " not found.");
   // }
@@ -51,7 +51,7 @@ void ReadClusterIndicators(std::string &indicator_path, Reference &reference) {
   //  if (indicator_file.is_open()) {
     std::string indicator_s;
     signed indicator_i = 0;
-    while (getline(std::cin, indicator_s) && indicator_s != "PSEUDOALIGNMENT_COUNTS") {
+    while (getline(std::cin, indicator_s) && indicator_s != "RUN_INFO") {
       if (str_to_int.find(indicator_s) == str_to_int.end()) {
 	str_to_int[indicator_s] = indicator_i;
 	reference.group_names.emplace_back(indicator_s);
