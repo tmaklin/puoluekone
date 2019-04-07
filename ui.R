@@ -13,6 +13,8 @@
 ## You should have received a copy of the GNU General Public License
 ## along with Puoluekone.  If not, see <https://www.gnu.org/licenses/>.
 
+addResourcePath(prefix = 'www', directoryPath = 'www')
+
 fluidPage(
     titlePanel("Bayesiläinen puoluekone"),
     h3("Lyhyesti"),
@@ -31,6 +33,7 @@ fluidPage(
         htmlOutput("parties"),
         h3("Sijoitus ehdokkaisiin nähden"),
         plotOutput("plot1", width='100%'),
-        includeHTML("html/selite.html")),
+        includeHTML("html/selite.html"),
+        tags$a(href = "www/javascript.html", rel = "jslicense", "JavaScript-lisenssit")),
     width = 12
 )
